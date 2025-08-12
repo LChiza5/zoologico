@@ -5,8 +5,10 @@
 package Tours;
 
 import Animals.Animal;
+import Animals.AnimalsHashMap;
 import Persons.Employees.Guide;
 import Persons.Visitors.Visitor;
+import Persons.Visitors.VisitorHashMap;
 import java.time.LocalDate;
 
 /**
@@ -15,9 +17,16 @@ import java.time.LocalDate;
  */
 public class Tour {
     private Guide guide;
-    LocalDate date;
-    private Visitor visitors[];
-    private Animal animals[];
+    private LocalDate date;
+    private VisitorHashMap visitors;
+    private AnimalsHashMap animals;
+
+    public Tour(Guide guide) {
+        this.guide = guide;
+        this.date = LocalDate.now();
+        this.visitors = new VisitorHashMap();
+        this.animals = new AnimalsHashMap();
+    }
 
     public Guide getGuide() {
         return guide;
@@ -27,27 +36,19 @@ public class Tour {
         return date;
     }
 
-    public Visitor[] getVisitors() {
+    public VisitorHashMap getVisitors() {
         return visitors;
     }
 
-    public Animal[] getAnimals() {
+    public AnimalsHashMap getAnimals() {
         return animals;
     }
 
-    public Tour(Guide guide, Visitor visitors[]) {
-        this.guide = guide;
-        this.date = LocalDate.now();
-        this.visitors = visitors;
-        this.animals = new Animal[30];
+    public boolean addVisitor(Visitor visitor) {
+        return visitors.add(visitor);
     }
-    
-    public void addSeenAnimal(Animal animal){
-        for (int i = 0; i < 30; i++) {
-            if(animals[i]==null){
-                animals[i]=animal;
-                break;
-            }
-        }
+
+    public boolean addSeenAnimal(Animal animal) {
+        return animals.add(animal);
     }
 }
