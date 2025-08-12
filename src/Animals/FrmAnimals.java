@@ -4,17 +4,37 @@
  */
 package Animals;
 
+import javax.swing.DefaultComboBoxModel;
+
 /**
  *
  * @author ilope
  */
 public class FrmAnimals extends javax.swing.JFrame {
-
+        private AnimalsHashMap list;
+        private Animal animal;
+    
     /**
      * Creates new form FrmAnimals
      */
     public FrmAnimals() {
         initComponents();
+        list = new AnimalsHashMap();
+        animal = null;
+        showZones();
+        showSpecies();
+    }
+    
+    private void showZones(){
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        for (Zone zone:Zone.values()) {
+            model.addElement(zone);
+        }
+        txtZone.setModel(model);
+    }
+    
+    private void showSpecies(){
+        
     }
 
     /**

@@ -51,7 +51,7 @@ public class Guide extends Employee {
     private void recordTour(Visitor visitors[]){
         for (int i = 0; i < 30; i++) {
             if(tours[i]==null){
-                tours[i]=new Tour(this,visitors);
+                tours[i]=new Tour(this);
                 break;
             }
         }
