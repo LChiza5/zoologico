@@ -4,7 +4,11 @@
  */
 package Animals;
 
+import Utils.UtilDate;
+import Utils.UtilGUI;
+import java.time.LocalDate;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -50,14 +54,58 @@ public class FrmAnimals extends javax.swing.JFrame {
     }
    
     private boolean validateRequiere(){
-        
+        return UtilGUI.validateRequiere(txtId,txtName,txtSpecie,txtBirthday,txtZone);
     }
     
     private void save(){
+        if (!validateRequiere()){
+            UtilGUI.showErrorMessage(this, "Faltan datos requeridos", "Error");
+            return;
+        }
         
+        String id=txtId.getText();
+        String name=txtName.getText();
+        String specie=txtSpecie.getSelectedItem().toString();
+        LocalDate date=UtilDate.toLocalDate(txtBirthday.getText());
+        Zone zone=(Zone)txtZone.getSelectedItem();
+        
+        animal=new Animal(id,name,specie,date);
+        
+        if (!list.add(animal)){
+            JOptionPane.showMessageDialog(this, "No se agrego el registro");
+            return;
+        }
+        
+        UtilGUI.showMessage(this, "Registro agregado "+animal.getName(), "Agregado");
+        showSpecies();
     }
     
-    
+    private void update(){
+        if(animal==null){
+            UtilGUI.showErrorMessage(this, "No se ha seleccionado un registro", "Error");
+            return;
+        }
+        if (!validateRequiere()){
+            UtilGUI.showErrorMessage(this, "Faltan datos requeridos", "Error");
+            return;
+        }
+        
+        
+        Zone zone=(Zone)txtZone.getSelectedItem();
+        
+         animal.setZone(zone);
+        
+        if (!list.add(animal)){
+            JOptionPane.showMessageDialog(this, "No se agrego el registro");
+            return;
+        }
+        
+        UtilGUI.showMessage(this, "Registro agregado "+animal.getName(), "Agregado");
+        showSpecies();
+    }
+    private void delete(){
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,6 +120,7 @@ public class FrmAnimals extends javax.swing.JFrame {
         btnSearch = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         txtName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -101,32 +150,47 @@ public class FrmAnimals extends javax.swing.JFrame {
         });
 
         btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/document_save (4).png"))); // NOI18N
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+
+        btnUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/cap_america_48.png"))); // NOI18N
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(193, 193, 193)
+                .addGap(145, 145, 145)
                 .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(40, 40, 40)
+                .addGap(18, 18, 18)
                 .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30)
+                .addGap(18, 18, 18)
+                .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16)
                 .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(230, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(34, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnSave, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnClear, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnUpdate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(17, 17, 17))
         );
 
@@ -281,6 +345,14 @@ public class FrmAnimals extends javax.swing.JFrame {
         clear();
     }//GEN-LAST:event_btnClearActionPerformed
 
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        save();
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+       update();
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -321,6 +393,7 @@ public class FrmAnimals extends javax.swing.JFrame {
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSearch;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
