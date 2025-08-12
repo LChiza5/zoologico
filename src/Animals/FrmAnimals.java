@@ -95,13 +95,7 @@ public class FrmAnimals extends javax.swing.JFrame {
         
          animal.setZone(zone);
         
-        if (!list.add(animal)){
-            JOptionPane.showMessageDialog(this, "No se agrego el registro");
-            return;
-        }
         
-        UtilGUI.showMessage(this, "Registro agregado "+animal.getName(), "Agregado");
-        showSpecies();
     }
     private void delete(){
         
