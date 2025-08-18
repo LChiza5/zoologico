@@ -97,7 +97,7 @@ public class FrmAnimals extends javax.swing.JFrame {
     
     private void delete(){
         if (animal==null){
-            UtilGUI.showErrorMessage(this, "Debe especificar el animal a eliminar");
+            UtilGUI.showErrorMessage(this, "Debe especificar el animal a eliminar", "Error");
             return;
         }
         if (!list.remove(animal)){
