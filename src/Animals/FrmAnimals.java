@@ -104,7 +104,20 @@ public class FrmAnimals extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No se elimino el registro");
             return;
         }
+        animal=null;
         clear();
+    }
+    
+    private void showData(){
+        txtId.setText(animal.getId());
+        txtName.setText(animal.getName());
+        txtSpecie.setSelectedItem(animal.getSpecies());
+        txtBirthday.setText(UtilDate.toString(animal.getBirthDate()));
+        txtZone.setSelectedItem(animal.getZone());
+    }
+    
+    private void search(){
+        FrmBuscarAnimal frm = new FrmBuscarAnimal();
     }
     
     /**
@@ -140,8 +153,18 @@ public class FrmAnimals extends javax.swing.JFrame {
         jPanel1.setBorder(new javax.swing.border.MatteBorder(null));
 
         btnEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/application_exit (4).png"))); // NOI18N
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/deskbar-applet.png"))); // NOI18N
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         btnClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/application_vnd.oasis.opendocument.spreadsheet (4).png"))); // NOI18N
         btnClear.addActionListener(new java.awt.event.ActionListener() {
@@ -352,6 +375,14 @@ public class FrmAnimals extends javax.swing.JFrame {
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
        update();
     }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        showData();
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        delete();
+    }//GEN-LAST:event_btnEliminarActionPerformed
 
     /**
      * @param args the command line arguments
