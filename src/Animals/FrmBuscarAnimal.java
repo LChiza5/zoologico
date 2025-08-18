@@ -4,17 +4,22 @@
  */
 package Animals;
 
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
 /**
  *
  * @author Luisk
  */
 public class FrmBuscarAnimal extends javax.swing.JDialog {
+    private AnimalsHashMap list;
     private Animal animal;
     
+    private DefaultTableModel model;
+    private TableRowSorter<DefaultTableModel> sorter;
+    private RowFilter<DefaultTableModel, Object> rowFilter;
     
-    public Animal getAnimal(){
-        return animal;
-    }
     /**
      * Creates new form FrmBuscarAnimal
      */
