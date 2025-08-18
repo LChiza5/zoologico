@@ -5,6 +5,7 @@
 package Animals;
 
 import Utils.UtilDate;
+import Utils.UtilGUI;
 import java.util.HashMap;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -86,12 +87,16 @@ public class FrmBuscarAnimal extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("Buscar");
 
-        txtNombre.setEditable(false);
         txtNombre.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         txtNombre.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
+        txtNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                enter(evt);
+            }
+        });
 
         tblAnimales.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 3));
-        tblAnimales.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        tblAnimales.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         tblAnimales.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -190,7 +195,14 @@ public class FrmBuscarAnimal extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        animal=null;
+        int row =tblAnimales.getSelectedRow();
+        if (row==-1){
+            UtilGUI.showErrorMessage(this, "Debe seleccionar un animal", "Error");
+            return;
+        }
+        String id=String.valueOf(tblAnimales.getValueAt(row,0));
+        animal=list.find(id);
+        setVisible(false);
         this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
 
@@ -198,6 +210,11 @@ public class FrmBuscarAnimal extends javax.swing.JDialog {
         setVisible(false);
         dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void enter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enter
+        rowFilter = RowFilter.regexFilter("(?i)" + txtNombre.getText());
+        sorter.setRowFilter(rowFilter);
+    }//GEN-LAST:event_enter
 
     /**
      * @param args the command line arguments

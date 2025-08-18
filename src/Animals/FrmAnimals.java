@@ -118,7 +118,15 @@ public class FrmAnimals extends javax.swing.JFrame {
     
     private void search(){
         FrmBuscarAnimal frm = new FrmBuscarAnimal(this,true);
+        frm.setList(list);
         frm.setVisible(true);
+        animal=frm.getAnimal();
+        if(animal==null){
+            clear();
+           
+        }else{
+            showData();
+        }
     }
     
     /**
