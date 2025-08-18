@@ -89,23 +89,24 @@ public class FrmAnimals extends javax.swing.JFrame {
             UtilGUI.showErrorMessage(this, "Faltan datos requeridos", "Error");
             return;
         }
-        
-        
+ 
         Zone zone=(Zone)txtZone.getSelectedItem();
         
-         animal.setZone(zone);
-        
-        if (!list.add(animal)){
-            JOptionPane.showMessageDialog(this, "No se agrego el registro");
+         animal.setZone(zone);  
+    }
+    
+    private void delete(){
+        if (animal==null){
+            UtilGUI.showErrorMessage(this, "Debe especificar el animal a eliminar");
             return;
         }
-        
-        UtilGUI.showMessage(this, "Registro agregado "+animal.getName(), "Agregado");
-        showSpecies();
+        if (!list.remove(animal)){
+            JOptionPane.showMessageDialog(this, "No se elimino el registro");
+            return;
+        }
+        clear();
     }
-    private void delete(){
-        
-    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
