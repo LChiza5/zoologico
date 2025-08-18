@@ -117,7 +117,9 @@ public class FrmAnimals extends javax.swing.JFrame {
     }
     
     private void search(){
-        FrmBuscarAnimal frm = new FrmBuscarAnimal();
+        FrmBuscarAnimal frm = new FrmBuscarAnimal(this,true);
+        frm.setVisible(true);
+        
     }
     
     /**
@@ -377,7 +379,7 @@ public class FrmAnimals extends javax.swing.JFrame {
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        showData();
+        search();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
