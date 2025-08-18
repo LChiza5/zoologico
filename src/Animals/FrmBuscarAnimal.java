@@ -4,6 +4,8 @@
  */
 package Animals;
 
+import Utils.UtilDate;
+import java.util.HashMap;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -19,6 +21,17 @@ public class FrmBuscarAnimal extends javax.swing.JDialog {
     private DefaultTableModel model;
     private TableRowSorter<DefaultTableModel> sorter;
     private RowFilter<DefaultTableModel, Object> rowFilter;
+
+    public void setList(AnimalsHashMap list) {
+        this.list = list;
+        loadTable();
+    }
+
+    public Animal getAnimal() {
+        return animal;
+    }
+    
+    
     
     /**
      * Creates new form FrmBuscarAnimal
@@ -26,8 +39,19 @@ public class FrmBuscarAnimal extends javax.swing.JDialog {
     public FrmBuscarAnimal(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        animal = null;
+        model= (DefaultTableModel) tblAnimales.getModel();
+        sorter = new TableRowSorter<>(model);
+        tblAnimales.setRowSorter(sorter);
         
+    }
+    
+    private void loadTable(){
+        HashMap<String, Animal> map = list.getMap();
+        model.setRowCount(0);
+        for (Animal animal : map.values()) {
+            Object[] data = {animal.getId(), animal.getName(), animal.getSpecies(), animal.getZone(), UtilDate.toString(animal.getBirthDate())};
+            model.addRow(data);
+        }
     }
 
     /**
