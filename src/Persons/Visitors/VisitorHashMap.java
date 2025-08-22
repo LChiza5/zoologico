@@ -5,6 +5,7 @@
 package Persons.Visitors;
 
 import Lists.List;
+import java.util.Collection;
 import java.util.HashMap;
 
 
@@ -40,6 +41,12 @@ public class VisitorHashMap implements List<Visitor> {
 
     @Override
     public void showAll() {
-        
+        for (Visitor v : visitors.values()) {
+            System.out.println(v);
+        }
+    }
+
+    public Collection<Visitor> getAll() {
+        return visitors.values();
     }
 }

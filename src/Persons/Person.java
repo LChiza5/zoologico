@@ -42,8 +42,19 @@ public abstract class Person {
             this.phone = phone;
     }
     
-    private static boolean validatePhone(String phone){
-        return phone.matches("^[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}$");
+    public static String normalizePhone(String phone) {
+        if (phone == null) return null;
+        String digits = phone.replaceAll("\\D+", ""); 
+
+        if (digits.startsWith("506") && digits.length() == 11) {
+            digits = digits.substring(3); 
+        }
+        return digits;
+    }
+
+    public static boolean validatePhone(String phone) {
+        String digits = normalizePhone(phone);
+        return digits != null && digits.length() == 8;
     }
 
     public Person(String id, String name, LocalDate birthDate, String phone) {
