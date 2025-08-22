@@ -5,6 +5,7 @@
 package Persons.Employees;
 
 
+import Lists.ListaEmpleado;
 import Utils.UtilDate;
 import Utils.UtilGUI;
 import java.time.LocalDate;
@@ -19,7 +20,7 @@ import javax.swing.JOptionPane;
  * @author ilope
  */
 public class FrmEmployees extends javax.swing.JFrame {
-    private EmployeeList list;
+        private ListaEmpleado list;
         private Employee empleado;
 
     /**
@@ -27,7 +28,7 @@ public class FrmEmployees extends javax.swing.JFrame {
      */
     public FrmEmployees() {
         initComponents();
-        list = new EmployeeList();
+        list = new ListaEmpleado();
         empleado = null;
     }
     private void clear(){
@@ -126,15 +127,15 @@ public class FrmEmployees extends javax.swing.JFrame {
     }
 
     private void search() {
-        FrmBuscarEmployee frm = new FrmBuscarEmployee(this, true);
-        frm.setList(list);
-        frm.setVisible(true);
-        empleado = frm.getEmployee();
-        if (empleado == null) {
-            clear();
-        } else {
-            showData();
-        }
+         FrmBuscarEmployee frm = new FrmBuscarEmployee(this, true, false);
+    frm.setList(list); // ahora list es ListaEmpleado, coincide con el setList
+    frm.setVisible(true);
+    empleado = frm.getEmployee();
+    if (empleado == null) {
+        clear();
+    } else {
+        showData();
+    }
     }
 
 

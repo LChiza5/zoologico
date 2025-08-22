@@ -15,12 +15,13 @@ import java.time.Period;
  */
 public class Employee extends Person {
     private Double salary;
-
+    private String puesto;
+    
     public Employee(String id, String name, LocalDate birthDate, String phone, Double salary1) {
         super(id, name, UtilDate.isLegalAge(birthDate) ? birthDate : null, phone);
         
-        if (validateSalary(salary)) {
-            this.salary = salary;
+        if (validateSalary(salary1)) {
+            this.salary = salary1;
         } else {
             this.salary = 3000.0; 
         }
@@ -57,10 +58,12 @@ public class Employee extends Person {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    Object getPuesto() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public String getPuesto() {
+        return puesto;
     }
+
+    public void setPuesto(String puesto) {
+        this.puesto = puesto;
     
-    
-    
+    }  
 }

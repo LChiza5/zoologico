@@ -4,9 +4,11 @@
  */
 package Persons.Employees;
 
+import Lists.ListaEmpleado;
 import Utils.UtilDate;
 import Utils.UtilGUI;
 import java.util.HashMap;
+import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -16,29 +18,43 @@ import javax.swing.table.TableRowSorter;
  * @author ilope
  */
 public class FrmBuscarEmployee extends javax.swing.JDialog {
-        private EmployeeList list;
-        private Employee empleado;
-        private DefaultTableModel model;
-    private TableRowSorter<DefaultTableModel> sorter;
-    private RowFilter<DefaultTableModel, Object> rowFilter;
-
-    public void setList(EmployeeList list) {
-        this.list = list;
-        
-    }
-
-    public Employee getEmployee() {
-        return empleado;
-    }
+        private ListaEmpleado list;       
+        private Employee selectedEmployee; 
+        private boolean onlyGuides;
     /**
      * Creates new form FrmBuscarEmployee
      */
-    public FrmBuscarEmployee(java.awt.Frame parent, boolean modal) {
+    public FrmBuscarEmployee(java.awt.Frame parent, boolean modal, boolean onlyGuides) {
         super(parent, modal);
         initComponents();
-        model= (DefaultTableModel) tblEmpleados.getModel();
-        sorter = new TableRowSorter<>(model);
-        tblEmpleados.setRowSorter(sorter);
+        this.onlyGuides = onlyGuides;
+        selectedEmployee = null;
+    }
+    
+     public void setList(ListaEmpleado list) {
+        this.list = list;
+        showEmployees();
+    }
+
+    public Employee getEmployee() {
+        return selectedEmployee;
+    }
+
+    private void showEmployees() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Nombre");
+        model.addColumn("Puesto");
+        model.addColumn("ID");
+
+        String filter = txtNombre.getText().trim().toLowerCase();
+
+        for (Employee e : list.getAll()) {
+            if (onlyGuides && !(e instanceof Guide)) continue;
+            if (!e.getName().toLowerCase().contains(filter)) continue;
+            model.addRow(new Object[]{e.getName(), e.getPuesto(), e.getId()});
+        }
+
+        tblEmpleados.setModel(model);
     }
     
 
@@ -79,6 +95,11 @@ public class FrmBuscarEmployee extends javax.swing.JDialog {
         txtNombre.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNombreenter(evt);
+            }
+        });
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtNombreKeyReleased(evt);
             }
         });
 
@@ -182,26 +203,28 @@ public class FrmBuscarEmployee extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtNombreenter(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreenter
-        rowFilter = RowFilter.regexFilter("(?i)" + txtNombre.getText());
-        sorter.setRowFilter(rowFilter);
+        
     }//GEN-LAST:event_txtNombreenter
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-        int row =tblEmpleados.getSelectedRow();
-        if (row==-1){
-            UtilGUI.showErrorMessage(this, "Debe seleccionar un Empleado", "Error");
-            return;
+        int selectedRow = tblEmpleados.getSelectedRow();
+        if (selectedRow >= 0) {
+            String id = tblEmpleados.getValueAt(selectedRow, 2).toString();
+            selectedEmployee = list.findById(id);
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un empleado", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        String id=String.valueOf(tblEmpleados.getValueAt(row,0));
-        empleado=list.find(id);
-        setVisible(false);
-        this.dispose();
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        setVisible(false);
+        selectedEmployee = null;
         dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void txtNombreKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyReleased
+             showEmployees();
+    }//GEN-LAST:event_txtNombreKeyReleased
 
     /**
      * @param args the command line arguments
@@ -233,7 +256,7 @@ public class FrmBuscarEmployee extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                FrmBuscarEmployee dialog = new FrmBuscarEmployee(new javax.swing.JFrame(), true);
+                FrmBuscarEmployee dialog = new FrmBuscarEmployee(new javax.swing.JFrame(), true, false);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

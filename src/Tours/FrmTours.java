@@ -4,17 +4,140 @@
  */
 package Tours;
 
+import Animals.Animal;
+import Lists.ListaGuia;
+import Persons.Employees.Guide;
+import Persons.Visitors.Visitor;
+import Utils.UtilGUI;
+import java.time.LocalDate;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ilope
  */
 public class FrmTours extends javax.swing.JFrame {
+    private TourHashMap list;
+    private Tour tour;
 
-    /**
-     * Creates new form FrmTours
-     */
     public FrmTours() {
         initComponents();
+        list = new TourHashMap();
+        tour = null;
+        showTours();
+    }
+
+    private void clear() {
+        txtGuide.setText("");
+        txtVisitor.setText("");
+        txtAnimales.setText("");
+        tblTours.clearSelection();
+        tour = null;
+    }
+
+    private boolean validateRequired() {
+        return UtilGUI.validateRequiere(txtGuide, txtVisitor, txtAnimales);
+    }
+
+    private void save() {
+        if (!validateRequired()) {
+            UtilGUI.showErrorMessage(this, "Faltan datos requeridos", "Error");
+            return;
+        }
+
+        String guideName = txtGuide.getText().trim();
+        if (guideName.isEmpty()) {
+            UtilGUI.showErrorMessage(this, "Debe ingresar un guía", "Error");
+            return;
+        }
+
+        // Crear tour con guía
+        Guide guide = new Guide("G" + System.currentTimeMillis(), guideName, LocalDate.now(), "Guía", 0.0);
+        tour = new Tour(guide);
+
+        // Agregar visitantes
+        String visitorText = txtVisitor.getText().trim();
+        if (!visitorText.isEmpty()) {
+            String[] visitorNames = visitorText.split(",");
+            for (String name : visitorNames) {
+                name = name.trim();
+                String id = "V" + System.currentTimeMillis();
+                Visitor v = new Visitor(id, name, LocalDate.now(), "00000000");
+                tour.addVisitor(v);
+            }
+        }
+
+        // Agregar animales
+        String animalText = txtAnimales.getText().trim();
+        if (!animalText.isEmpty()) {
+            String[] animalNames = animalText.split(",");
+            for (String name : animalNames) {
+                String id = "A" + System.currentTimeMillis();
+                Animal a = new Animal(id, name, "Desconocido", LocalDate.now());
+                tour.addSeenAnimal(a);
+            }
+        }
+
+        if (!list.add(tour)) {
+            JOptionPane.showMessageDialog(this, "No se agregó el tour (ya existe)");
+            return;
+        }
+
+        showTours();
+        UtilGUI.showMessage(this, "Tour agregado: " + guide.getName(), "Agregado");
+        clear();
+    }
+
+    private void delete() {
+        int selectedRow = tblTours.getSelectedRow();
+        if (selectedRow >= 0) {
+            String guideName = tblTours.getValueAt(selectedRow, 0).toString();
+            Tour selectedTour = null;
+            for (Tour t : list.getAll()) {
+                if (t.getGuide().getName().equalsIgnoreCase(guideName)) {
+                    selectedTour = t;
+                    break;
+                }
+            }
+            if (selectedTour != null) {
+                list.remove(selectedTour);
+                showTours();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un tour para eliminar");
+        }
+    }
+
+    private void showTours() {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Guía");
+        model.addColumn("Fecha");
+        model.addColumn("Visitantes");
+        model.addColumn("Animales");
+
+        for (Tour t : list.getAll()) {
+            String visitorNames = "";
+            for (Visitor v : t.getVisitors().getAll()) {
+                visitorNames += v.getName() + ", ";
+            }
+            if (!visitorNames.isEmpty()) visitorNames = visitorNames.substring(0, visitorNames.length() - 2);
+
+            String animalNames = "";
+            for (Animal a : t.getAnimals().getMap().values()) {
+                animalNames += a.getName() + ", ";
+            }
+            if (!animalNames.isEmpty()) animalNames = animalNames.substring(0, animalNames.length() - 2);
+
+            model.addRow(new Object[]{
+                    t.getGuide().getName(),
+                    t.getDate().toString(),
+                    visitorNames,
+                    animalNames
+            });
+        }
+
+        tblTours.setModel(model);
     }
 
     /**
@@ -29,16 +152,16 @@ public class FrmTours extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        jFormattedTextField3 = new javax.swing.JFormattedTextField();
+        txtDate = new javax.swing.JFormattedTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtVisitor = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
+        txtAnimales = new javax.swing.JTextField();
+        txtGuide = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblTours = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         btnClear = new javax.swing.JButton();
         btnSave = new javax.swing.JButton();
@@ -56,9 +179,9 @@ public class FrmTours extends javax.swing.JFrame {
         jLabel3.setText("Visitante");
         jLabel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
 
-        jFormattedTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtDate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jFormattedTextField3ActionPerformed(evt);
+                txtDateActionPerformed(evt);
             }
         });
 
@@ -70,9 +193,9 @@ public class FrmTours extends javax.swing.JFrame {
         jLabel4.setText("Guía");
         jLabel4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        txtVisitor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                txtVisitorActionPerformed(evt);
             }
         });
 
@@ -80,15 +203,15 @@ public class FrmTours extends javax.swing.JFrame {
         jLabel5.setText("Animales");
         jLabel5.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 3, true));
 
-        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtAnimales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField3ActionPerformed(evt);
+                txtAnimalesActionPerformed(evt);
             }
         });
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtGuide.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtGuideActionPerformed(evt);
             }
         });
 
@@ -103,16 +226,16 @@ public class FrmTours extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel3)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtGuide, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtVisitor, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 189, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jFormattedTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtAnimales, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(61, 61, 61))
         );
         jPanel1Layout.setVerticalGroup(
@@ -124,8 +247,8 @@ public class FrmTours extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(4, 4, 4)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jFormattedTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtGuide, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(12, 12, 12)
@@ -135,12 +258,12 @@ public class FrmTours extends javax.swing.JFrame {
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtAnimales, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtVisitor, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblTours.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -151,7 +274,7 @@ public class FrmTours extends javax.swing.JFrame {
                 "Guia", "Visitantes", "Animales", "Fecha"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblTours);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -239,21 +362,21 @@ public class FrmTours extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtGuideActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtGuideActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtGuideActionPerformed
 
-    private void jFormattedTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jFormattedTextField3ActionPerformed
+    private void txtDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDateActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jFormattedTextField3ActionPerformed
+    }//GEN-LAST:event_txtDateActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void txtVisitorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtVisitorActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_txtVisitorActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void txtAnimalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtAnimalesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_txtAnimalesActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         clear();
@@ -306,7 +429,6 @@ public class FrmTours extends javax.swing.JFrame {
     private javax.swing.JButton btnClear;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnSave;
-    private javax.swing.JFormattedTextField jFormattedTextField3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -316,9 +438,10 @@ public class FrmTours extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTable tblTours;
+    private javax.swing.JTextField txtAnimales;
+    private javax.swing.JFormattedTextField txtDate;
+    private javax.swing.JTextField txtGuide;
+    private javax.swing.JTextField txtVisitor;
     // End of variables declaration//GEN-END:variables
 }
